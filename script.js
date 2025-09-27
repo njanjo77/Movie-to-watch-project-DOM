@@ -4,9 +4,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // delete movies
     list.addEventListener("click", function (e) {
-        if (e.target.className == 'delete') {
+        if (e.target.className == 'deleteicon') {
             const li = e.target.parentElement;
             li.parentNode.removeChild(li);
+        }
+    })
+    list.addEventListener("click", function (e) {
+        if (e.target.className == 'editicon') {
+            const li = e.target.parentElement.parentElement;
+            li.parentNode.editChild(li);
         }
     })
 
@@ -24,25 +30,37 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
+        const container = document.getElementById('icon-container');
+      //create first icon
+      const editIcon = document.createElement('i');
+      editIcon.classList.add('fa-solid', 'fa-pen-to-square');
 
+        //create second icon
+        const deleteicon = document.createElement('i');
+        icon.classList.add('fa-solid', 'fa-trash');
+        // create elements
         const li = document.createElement('li');
         const movieName = document.createElement('span')
-        const deleteBtn = document.createElement('span')
+        const editBtn = document.createElement('editicon')
+        const deleteBtn = document.createElement('deleteicon')
 
         // adding content
         movieName.textContent = value;
-        deleteBtn.textContent = 'Delete';
+        editBtn.textContent = editIcon;
+        deleteBtn.textContent = deleteicon;
 
         // adding classes
         movieName.classList.add('name');
+        editBtn.classList.add('edit');
         deleteBtn.classList.add('delete');
 
         // append to DOM
         li.appendChild(movieName);
-        li.appendChild(deleteBtn);
+        li.appendChild(editicon);
+        li.appendChild(deleteicon);
         list.appendChild(li);
         // reset the form
         addMovieForm.reset();
     })
 
-})
+});
