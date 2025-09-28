@@ -1,66 +1,82 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const list = document.querySelector("#movie-list ul")
-    const forms = document.forms
+    const list = document.querySelector("#movie-list ul");
+    const forms = document.forms;
 
     // delete movies
     list.addEventListener("click", function (e) {
-        if (e.target.className == 'deleteicon') {
-            const li = e.target.parentElement;
-            li.parentNode.removeChild(li);
+        if (e.target.closest(".delete")) {
+            const li = e.target.closest("li");
+            li.remove();
         }
-    })
-    list.addEventListener("click", function (e) {
-        if (e.target.className == 'editicon') {
-            const li = e.target.parentElement.parentElement;
-            li.parentNode.editChild(li);
-        }
-    })
+    });
 
-    //add movie
-    const addMovieForm = forms['add-movie']
+    // edit/save movies
+    list.addEventListener("click", function (e) {
+        const editBtn = e.target.closest(".edit");
+        if (editBtn) {
+            const li = editBtn.closest("li");
+            const isEditing = li.classList.contains("editing");
+
+            if (!isEditing) {
+                // switch to editing mode
+                const span = li.querySelector(".name");
+                const input = document.createElement("input");
+                input.type = "text";
+                input.value = span.textContent;
+                input.classList.add("edit-input");
+
+                li.replaceChild(input, span);
+                li.classList.add("editing");
+                editBtn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i>';
+                input.focus();
+            } else {
+                // save changes
+                const input = li.querySelector(".edit-input");
+                const newSpan = document.createElement("span");
+                newSpan.textContent = input.value.trim() || "Untitled Movie";
+                newSpan.classList.add("name");
+
+                li.replaceChild(newSpan, input);
+                li.classList.remove("editing");
+                editBtn.innerHTML = '<i class="fa-solid fa-pen-to-square"></i>';
+            }
+        }
+    });
+
+    // add movie
+    const addMovieForm = forms['add-movie'];
     addMovieForm.addEventListener("submit", function (e) {
         e.preventDefault();
-
-        // create elements
-        const value = addMovieForm.querySelector('input[type="text"]').value;
-
-        // check if the input is empty
+        const value = addMovieForm.querySelector('input[type="text"]').value.trim();
         if (!value) {
             alert("Please enter a movie name!");
             return;
         }
 
-        const container = document.getElementById('icon-container');
-      //create first icon
-      const editIcon = document.createElement('i');
-      editIcon.classList.add('fa-solid', 'fa-pen-to-square');
-
-        //create second icon
-        const deleteicon = document.createElement('i');
-        icon.classList.add('fa-solid', 'fa-trash');
-        // create elements
         const li = document.createElement('li');
-        const movieName = document.createElement('span')
-        const editBtn = document.createElement('editicon')
-        const deleteBtn = document.createElement('deleteicon')
+        const movieName = document.createElement('span');
+        const iconContainer = document.createElement('div');
+        const editBtn = document.createElement('span');
+        const deleteBtn = document.createElement('span');
 
-        // adding content
         movieName.textContent = value;
-        editBtn.textContent = editIcon;
-        deleteBtn.textContent = deleteicon;
-
-        // adding classes
         movieName.classList.add('name');
+
+        iconContainer.id = "icon-container";
+
         editBtn.classList.add('edit');
+        editBtn.innerHTML = '<i class="fa-solid fa-pen-to-square"></i>';
+
         deleteBtn.classList.add('delete');
+        deleteBtn.innerHTML = '<i class="fa-solid fa-trash"></i>';
 
-        // append to DOM
+        iconContainer.appendChild(editBtn);
+        iconContainer.appendChild(deleteBtn);
+
         li.appendChild(movieName);
-        li.appendChild(editicon);
-        li.appendChild(deleteicon);
+        li.appendChild(iconContainer);
         list.appendChild(li);
-        // reset the form
-        addMovieForm.reset();
-    })
 
+        addMovieForm.reset();
+    });
 });
